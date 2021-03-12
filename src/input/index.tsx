@@ -1,7 +1,7 @@
 import 'regenerator-runtime';
 import * as React from 'react';
 import slugify from 'slugify';
-import {  TabList, Tab, TabPanel, Card, Stack, ThemeProvider, studioTheme } from '@sanity/ui';
+import {  TabList, Tab, Text, TabPanel, Card, Stack, ThemeProvider, studioTheme } from '@sanity/ui';
 import styles from './input.scss';
 import PatchEvent, { setIfMissing, unset, set } from '@sanity/form-builder/lib/PatchEvent';
 import Field from '@sanity/form-builder/lib/inputs/ObjectInput/Field';
@@ -184,7 +184,12 @@ class Input extends React.PureComponent<IProps, IState> {
 
     return (
       <ThemeProvider theme={studioTheme}>
-        <Card padding={[2, 3, 4]} radius={2} shadow={1} tone="transparent">
+        <Card 
+          padding={[2, 3, 4]} 
+          radius={2} 
+          shadow={1} 
+          tone="transparent"
+        >
           <TabList space={2}>
             {
               languages.map(lang => (
@@ -199,7 +204,7 @@ class Input extends React.PureComponent<IProps, IState> {
               ))
             }
           </TabList>
-          <Card marginTop={4}>
+          <Card marginTop={4} tone="transparent">
             {
               languages.map(lang => (
                 <TabPanel
@@ -208,21 +213,23 @@ class Input extends React.PureComponent<IProps, IState> {
                   hidden={currentLanguage && (lang.name !== currentLanguage.name) || false}
                   id={`${lang.name}-panel`}
                 >
-                  <Card>
+                  <Card padding={[3, 3, 4]}
+                    radius={2}
+                    shadow={1} 
+                    tone="caution"
+                  >
                     {(hasLanguages && hasMissingTranslations) && (
                       <div className={styles.missing}>
-                        <p className={styles.entry}>{options?.messages?.missingTranslations || config.messages?.missingTranslations} ({baseLanguage?.title})</p>
-                        <p className={styles.entry}><strong>{this.missingTranslations.map(l => l.title).join(', ')}</strong></p>
+                        <Text>{options?.messages?.missingTranslations || config.messages?.missingTranslations} ({baseLanguage?.title})</Text>
+                        <Text>{this.missingTranslations.map(l => l.title).join(', ')}</Text>
                       </div>
                     )}
                   </Card>
-                  <Card>
-                    <Stack space={[3, 3, 4, 5]}>
-                      {fields.map((field) => (
-                        this.renderField(field)
-                      ))}
-                    </Stack>
-                  </Card>
+                  <Stack space={[3, 3, 4, 5]}>
+                    {fields.map((field) => (
+                      this.renderField(field)
+                    ))}
+                  </Stack>
                 </TabPanel>
               ))
             }

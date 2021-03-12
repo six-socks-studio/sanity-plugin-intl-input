@@ -1,6 +1,7 @@
 import 'regenerator-runtime';
 import * as React from 'react';
 import slugify from 'slugify';
+import {  TabList, Tab, TabPanel, Card, Stack, ThemeProvider, studioTheme } from '@sanity/ui';
 import styles from './input.scss';
 import PatchEvent, { setIfMissing, unset, set } from '@sanity/form-builder/lib/PatchEvent';
 import Field from '@sanity/form-builder/lib/inputs/ObjectInput/Field';
@@ -173,43 +174,61 @@ class Input extends React.PureComponent<IProps, IState> {
     const hasLanguages = languages.length > 0;
     const hasMissingTranslations = this.missingTranslations.length > 0;
 
-    return (
-      <>
-        {options.css && (
-          <style type="text/css">{options.css(styles)}</style>
-        )}
-        <div className={styles.root}>
-          {fetchingLanguages ? (
-            <div className={styles.loading}>
-              <p className={styles.message}>{options.messages?.loading || config.messages?.loading}</p>
-            </div>
-          ) : (
-              <>
-                <div className={styles.switch}>
-                  {languages.map(lang => (
-                    <button
-                      key={lang.name}
-                      className={styles.language}
-                      disabled={lang.name === currentLanguage?.name}
-                      onClick={() => this.onSelectLanguage(lang)}
-                    >
-                      {lang.title}
-                    </button>
-                  ))}
-                </div>
-                {(hasLanguages && hasMissingTranslations) && (
-                  <div className={styles.missing}>
-                    <p className={styles.entry}>{options?.messages?.missingTranslations || config.messages?.missingTranslations} ({baseLanguage?.title})</p>
-                    <p className={styles.entry}><strong>{this.missingTranslations.map(l => l.title).join(', ')}</strong></p>
-                  </div>
-                )}
-                {fields.map((field) => (
-                  this.renderField(field)
-                ))}
-              </>
-            )}
+    if (fetchingLanguages) {
+      return (
+        <div className={styles.loading}>
+          <p className={styles.message}>{options.messages?.loading || config.messages?.loading}</p>
         </div>
-      </>
+      )
+    }
+
+    return (
+      <ThemeProvider theme={studioTheme}>
+        <Card padding={[2, 3, 4]} radius={2} shadow={1} tone="transparent">
+          <TabList space={2}>
+            {
+              languages.map(lang => (
+                <Tab
+                  key={lang.name}
+                  aria-controls={`${lang.name}-panel`}
+                  id={`${lang.name}-tab`}
+                  label={lang.title}
+                  onClick={() => this.onSelectLanguage(lang)}
+                  selected={currentLanguage && (lang.name === currentLanguage.name) || false}
+                />
+              ))
+            }
+          </TabList>
+          <Card marginTop={4}>
+            {
+              languages.map(lang => (
+                <TabPanel
+                  key={lang.name}
+                  aria-labelledby={`${lang.name}-tab`}
+                  hidden={currentLanguage && (lang.name !== currentLanguage.name) || false}
+                  id={`${lang.name}-panel`}
+                >
+                  <Card>
+                    {(hasLanguages && hasMissingTranslations) && (
+                      <div className={styles.missing}>
+                        <p className={styles.entry}>{options?.messages?.missingTranslations || config.messages?.missingTranslations} ({baseLanguage?.title})</p>
+                        <p className={styles.entry}><strong>{this.missingTranslations.map(l => l.title).join(', ')}</strong></p>
+                      </div>
+                    )}
+                  </Card>
+                  <Card>
+                    <Stack space={[3, 3, 4, 5]}>
+                      {fields.map((field) => (
+                        this.renderField(field)
+                      ))}
+                    </Stack>
+                  </Card>
+                </TabPanel>
+              ))
+            }
+          </Card>
+        </Card>
+      </ThemeProvider>
     )
   }
 }

@@ -204,6 +204,16 @@ class Input extends React.PureComponent<IProps, IState> {
             }
           </TabList>
           <Card marginTop={4}>
+            {(hasLanguages && hasMissingTranslations) && (
+              <Card marginTop={4} padding={[3, 3, 4]}
+                radius={2}
+                shadow={1} 
+                tone="caution"
+              >
+                <Text>{options?.messages?.missingTranslations || config.messages?.missingTranslations} ({baseLanguage?.title})</Text>
+                <Text>{this.missingTranslations.map(l => l.title).join(', ')}</Text>
+              </Card>
+            )}
             {
               languages.map(lang => (
                 <TabPanel
@@ -212,16 +222,6 @@ class Input extends React.PureComponent<IProps, IState> {
                   hidden={currentLanguage && (lang.name !== currentLanguage.name) || false}
                   id={`${lang.name}-panel`}
                 >
-                    {(hasLanguages && hasMissingTranslations) && (
-                      <Card padding={[3, 3, 4]}
-                        radius={2}
-                        shadow={1} 
-                        tone="caution"
-                      >
-                        <Text>{options?.messages?.missingTranslations || config.messages?.missingTranslations} ({baseLanguage?.title})</Text>
-                        <Text>{this.missingTranslations.map(l => l.title).join(', ')}</Text>
-                      </Card>
-                    )}
                   <Stack space={[3, 3, 4, 5]}>
                     {fields.map((field) => (
                       this.renderField(field)

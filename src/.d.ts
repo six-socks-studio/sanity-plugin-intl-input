@@ -1,6 +1,6 @@
 declare module 'part:@sanity/*';
 
-declare module 'config:intl-input' {
+declare module 'config:@six-socks-studio/sanity-plugin-intl-input' {
   const config: import('./types').Ti18nConfig & {
     withTranslationsMaintenance?: boolean;
   };

@@ -1,6 +1,6 @@
 {
   "name": "@six-socks-studio/sanity-plugin-intl-input",
-  "version": "5.0.9",
+  "version": "5.0.10",
   "license": "MIT",
   "author": {
     "name": "Liam Martens",
@@ -25,11 +25,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/LiamMartens/sanity-plugin-intl-input"
+    "url": "https://github.com/six-socks-studio/sanity-plugin-intl-input"
   },
   "bugs": {
-    "email": "hi@liammartens.com",
-    "url": "https://github.com/LiamMartens/sanity-plugin-intl-input/issues"
+    "email": "support@sixsocks.studio",
+    "url": "https://github.com/six-socks-studio/sanity-plugin-intl-input/issues"
   },
   "scripts": {
     "build": "run-p build:*",

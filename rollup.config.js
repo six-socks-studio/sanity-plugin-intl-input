@@ -50,7 +50,7 @@ module.exports = (name) => {
     ].filter(Boolean),
     external: [
       /@babel\/runtime/,
-      'config:intl-input',
+      'config:@six-socks-studio/sanity-plugin-intl-input',
       'part:@sanity/base/client',
       'part:@sanity/base/document-badges',
       'part:@sanity/base/schema',

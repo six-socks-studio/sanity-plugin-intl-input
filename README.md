@@ -1,5 +1,5 @@
 # Intl plugin for Sanity
-[![npm version](https://img.shields.io/npm/v/sanity-plugin-intl-input.svg?style=flat)](https://www.npmjs.com/package/@six-socks-studio/sanity-plugin-intl-input)
+[![npm version](https://img.shields.io/npm/v/@six-socks-studio/sanity-plugin-intl-input.svg?style=flat)](https://www.npmjs.com/package/@six-socks-studio/sanity-plugin-intl-input)
 
 ## !! Breaking Change for V5
 **The ID structure for translated documents has changed. Your queries against Sanity will continue to work until you use the maintenance tab (new in V5) to update the ID structure.

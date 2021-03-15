@@ -3,8 +3,6 @@ import { getSchema } from './getSchema';
 import { Ti18nSchema, Ti18nConfig, TLanguagesOption, TMessagesConfig, TFieldNamesConfig } from '../types';
 import { IdStructure, ReferenceBehavior } from '../constants';
 
-console.log('inlt:config', config)
-
 export function getConfig(type?: string | Ti18nSchema): Required<{
   [K in keyof Ti18nConfig]: Required<Ti18nConfig[K]>
 }> & {

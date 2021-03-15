@@ -1,7 +1,7 @@
 import 'regenerator-runtime';
 import * as React from 'react';
 import slugify from 'slugify';
-import {  TabList, Tab, Text, TabPanel, Card, Stack, ThemeProvider, studioTheme } from '@sanity/ui';
+import { Button, TabList, Tab, Text, TabPanel, Card, Stack, ThemeProvider, studioTheme } from '@sanity/ui';
 import styles from './input.scss';
 import PatchEvent, { setIfMissing, unset, set } from '@sanity/form-builder/lib/PatchEvent';
 import Field from '@sanity/form-builder/lib/inputs/ObjectInput/Field';
@@ -35,6 +35,7 @@ interface IState {
 }
 
 const createSlug = (input: string) => slugify(input, { replacement: '_' }).replace(/-/g, '_');
+// const createPatchFrom = (value: any) => PatchEvent.from(set(value));
 
 class Input extends React.PureComponent<IProps, IState> {
   public state: IState = {
@@ -70,6 +71,30 @@ class Input extends React.PureComponent<IProps, IState> {
       const missingKeys = existingValues.filter(k => !fieldValue[k]);
       return missingKeys.length > 0;
     });
+  }
+
+  private copyContentFromBaseLanguage = () => {
+    const { currentLanguage, languages } = this.state;
+    const { value, type } = this.props;
+    const { fields } = type;
+
+    if (!currentLanguage) return
+
+    const defaultValues = (() => {
+      const l = this.getBaseLanguage(languages);
+      if (l) {
+        const slug = createSlug(l.name);
+        const v = (value && value[slug]) || {};
+        return Object.entries(v);
+      }
+      return [];
+    })();
+
+    defaultValues
+      .forEach(([k, v]) => {
+        const field = fields.find(f => f.name === k)
+        this.onFieldChange(PatchEvent.from(setIfMissing(v)), field);
+      });
   }
 
   /**
@@ -170,7 +195,7 @@ class Input extends React.PureComponent<IProps, IState> {
     const { type } = this.props;
     const { fields, options } = type;
     const config = getConfig(type.type);
-    const baseLanguage = this.getBaseLanguage();
+    const baseLanguage = this.getBaseLanguage(languages);
     const hasLanguages = languages.length > 0;
     const hasMissingTranslations = this.missingTranslations.length > 0;
 
@@ -222,7 +247,26 @@ class Input extends React.PureComponent<IProps, IState> {
                   hidden={currentLanguage && (lang.name !== currentLanguage.name) || false}
                   id={`${lang.name}-panel`}
                 >
-                  <Stack space={[3, 3, 4, 5]}>
+                  {baseLanguage && currentLanguage && (baseLanguage.name !== currentLanguage.name) && (
+                    <Card marginTop={4} padding={[3, 3, 4]} tone="caution">
+                      <Stack space={[2, 3]}>
+                        <Card tone="caution">
+                          <Text>Do you want to copy content from {baseLanguage.title}?</Text>
+                        </Card>
+                        <Card tone="caution">
+                          <Button
+                            fontSize={[1, 2]}
+                            tone="positive"
+                            padding={[1, 2]}
+                            text="Copy content"
+                            radius={0}
+                            onClick={this.copyContentFromBaseLanguage}
+                          />
+                        </Card>
+                      </Stack>
+                    </Card>
+                  )}
+                  <Stack space={[3, 3, 4, 5]} marginTop={4}>
                     {fields.map((field) => (
                       this.renderField(field)
                     ))}

@@ -37,7 +37,7 @@ interface IState {
 const createSlug = (input: string) => slugify(input, { replacement: '_' }).replace(/-/g, '_');
 // const createPatchFrom = (value: any) => PatchEvent.from(set(value));
 
-class Input extends React.PureComponent<IProps, IState> {
+class Input extends React.Component<IProps, IState> {
   public state: IState = {
     currentLanguage: null,
     fetchingLanguages: false,
@@ -147,16 +147,16 @@ class Input extends React.PureComponent<IProps, IState> {
     });
   }
 
-  public renderField = (field: IField) => {
-    const { currentLanguage } = this.state;
+  public renderField = (field: IField, lang: ILanguageObject) => {
     const { type, value, markers, readOnly, focusPath, onFocus, onBlur, filterField, presence } = this.props
-    if (!(filterField && filterField(type, field)) || field.type.hidden || !currentLanguage) return null;
-    const slug = createSlug(currentLanguage.name);
+    if (!(filterField && filterField(type, field)) || field.type.hidden || !lang) return null;
+    const slug = createSlug(lang.name);
     const fieldValue = value && value[slug] && value[slug][field.name]
+
     return (
       <Field
         presence={presence}
-        key={`${currentLanguage}.${field.name}`}
+        key={`${lang.name}.${field.name}`}
         field={field}
         value={fieldValue}
         onChange={this.onFieldChange}
@@ -268,7 +268,7 @@ class Input extends React.PureComponent<IProps, IState> {
                   )}
                   <Stack space={[3, 3, 4, 5]} marginTop={4}>
                     {fields.map((field) => (
-                      this.renderField(field)
+                      this.renderField(field, lang)
                     ))}
                   </Stack>
                 </TabPanel>

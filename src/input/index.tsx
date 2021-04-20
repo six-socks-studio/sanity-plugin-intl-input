@@ -1,8 +1,10 @@
 import 'regenerator-runtime';
 import * as React from 'react';
 import slugify from 'slugify';
+import cloneDeep from 'lodash.clonedeep'
 import { Button, TabList, Tab, Text, TabPanel, Card, Stack, ThemeProvider, studioTheme } from '@sanity/ui';
 import styles from './input.scss';
+import {randomKey} from '@sanity/block-tools'
 import PatchEvent, { setIfMissing, unset, set } from '@sanity/form-builder/lib/PatchEvent';
 import Field from '@sanity/form-builder/lib/inputs/ObjectInput/Field';
 import { IType } from '../types/IType';
@@ -90,10 +92,34 @@ class Input extends React.Component<IProps, IState> {
       return [];
     })();
 
+    const replaceKeys = blocks => {
+      const clonedBlocks = cloneDeep(blocks)
+
+      for (let block of clonedBlocks) {
+        block._key = randomKey(12)
+        if (block.children && block.children.length) {
+          block.children = replaceKeys(block.children)
+        }
+      }
+
+      return clonedBlocks
+    }
+
+    const cloneField = value => {
+      if (Array.isArray(value)) {
+        const n = replaceKeys(value)
+        console.log(n)
+        return n
+      } else {
+        return value
+      }
+    }
+
     defaultValues
       .forEach(([k, v]) => {
         const field = fields.find(f => f.name === k)
-        this.onFieldChange(PatchEvent.from(setIfMissing(v)), field);
+        const value = cloneField(v)
+        this.onFieldChange(PatchEvent.from(setIfMissing(value)), field);
       });
   }
 

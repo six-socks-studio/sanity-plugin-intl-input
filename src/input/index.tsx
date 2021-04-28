@@ -24,6 +24,7 @@ interface IProps {
   readOnly?: boolean;
   focusPath?: any[];
   presence?: any[]; /* should be FormFieldPresence[] */
+  level?: number;
   onChange?: (...args: any[]) => any;
   onFocus: (...args: any[]) => any;
   onBlur: (...args: any[]) => any;
@@ -174,23 +175,28 @@ class Input extends React.Component<IProps, IState> {
   }
 
   public renderField = (field: IField, lang: ILanguageObject) => {
-    const { type, value, markers, readOnly, focusPath, onFocus, onBlur, filterField, presence } = this.props
+    const { type, value, markers, readOnly, focusPath, onFocus, onBlur, filterField, presence, level } = this.props;
     if (!(filterField && filterField(type, field)) || field.type.hidden || !lang) return null;
+    
     const slug = createSlug(lang.name);
-    const fieldValue = value && value[slug] && value[slug][field.name]
+    const fieldValue = value && value[slug] && value[slug][field.name];
+    const _field = {
+      ...field,
+      type: { ...field.type, lang }
+    };
 
     return (
       <Field
         presence={presence}
         key={`${lang.name}.${field.name}`}
-        field={field}
+        field={_field}
         value={fieldValue}
         onChange={this.onFieldChange}
         onFocus={onFocus}
         onBlur={onBlur}
         markers={markers}
         focusPath={focusPath}
-        level={type.level}
+        level={level}
         readOnly={readOnly}
         filterField={filterField}
       />
@@ -292,11 +298,13 @@ class Input extends React.Component<IProps, IState> {
                       </Stack>
                     </Card>
                   )}
-                  <Stack space={[3, 3, 4, 5]} marginTop={4}>
-                    {fields.map((field) => (
-                      this.renderField(field, lang)
-                    ))}
-                  </Stack>
+                  { 
+                    <Stack space={[3, 3, 4, 5]} marginTop={4}>
+                      {fields.map((field) => (
+                        this.renderField(field, lang)
+                      ))}
+                    </Stack>
+                  }
                 </TabPanel>
               ))
             }

@@ -6,7 +6,7 @@ import { Button, TabList, Tab, Text, TabPanel, Card, Stack, ThemeProvider, studi
 import styles from './input.scss';
 import {randomKey} from '@sanity/block-tools'
 import PatchEvent, { setIfMissing, unset, set } from '@sanity/form-builder/lib/PatchEvent';
-import Field from '@sanity/form-builder/lib/inputs/ObjectInput/Field';
+import { FormBuilderInput } from 'part:@sanity/form-builder';
 import { IType } from '../types/IType';
 import { ILanguageObject } from '../types/ILanguageObject';
 import { getBaseLanguage, getLanguagesFromOption, getConfig } from '../utils';
@@ -14,6 +14,7 @@ import { getBaseLanguage, getLanguagesFromOption, getConfig } from '../utils';
 interface IField {
   name: string;
   type: IType;
+  fieldset: object;
 }
 
 interface IProps {
@@ -94,32 +95,31 @@ class Input extends React.Component<IProps, IState> {
     })();
 
     const replaceKeys = blocks => {
-      const clonedBlocks = cloneDeep(blocks)
+      const clonedBlocks = cloneDeep(blocks);
 
       for (let block of clonedBlocks) {
-        block._key = randomKey(12)
+        block._key = randomKey(12);
         if (block.children && block.children.length) {
-          block.children = replaceKeys(block.children)
+          block.children = replaceKeys(block.children);
         }
       }
 
-      return clonedBlocks
+      return clonedBlocks;
     }
 
     const cloneField = value => {
       if (Array.isArray(value)) {
-        const n = replaceKeys(value)
-        console.log(n)
-        return n
+        const n = replaceKeys(value);
+        return n;
       } else {
-        return value
+        return value;
       }
     }
 
     defaultValues
       .forEach(([k, v]) => {
-        const field = fields.find(f => f.name === k)
-        const value = cloneField(v)
+        const field = fields.find(f => f.name === k);
+        const value = cloneField(v);
         this.onFieldChange(PatchEvent.from(setIfMissing(value)), field);
       });
   }
@@ -180,18 +180,15 @@ class Input extends React.Component<IProps, IState> {
     
     const slug = createSlug(lang.name);
     const fieldValue = value && value[slug] && value[slug][field.name];
-    const _field = {
-      ...field,
-      type: { ...field.type, lang }
-    };
-
+    
     return (
-      <Field
+      <FormBuilderInput
         presence={presence}
         key={`${lang.name}.${field.name}`}
-        field={_field}
+        path={[lang.name, field.name]}
         value={fieldValue}
-        onChange={this.onFieldChange}
+        type={field.type}
+        onChange={(patchEvent) => this.onFieldChange(patchEvent, field)}
         onFocus={onFocus}
         onBlur={onBlur}
         markers={markers}
@@ -241,11 +238,7 @@ class Input extends React.Component<IProps, IState> {
 
     return (
       <ThemeProvider theme={studioTheme}>
-        <Card 
-          padding={[2, 3, 4]} 
-          radius={2} 
-          shadow={1} 
-        >
+        <Card>
           <TabList space={2}>
             {
               languages.map(lang => (

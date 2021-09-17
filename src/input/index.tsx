@@ -124,8 +124,8 @@ class Input extends React.Component<IProps, IState> {
         const field = fields.find(f => f.name === k);
         const newValue = cloneField(v);
         const slug = createSlug(currentLanguage.name);
-        const fieldValue = value && value[slug] && value[slug][field.name];
-        this.onFieldChange(PatchEvent.from(!fieldValue.length ? set(newValue) : setIfMissing(newValue)), field);
+        const fieldValue = value && value[slug] && value[slug][field.name] || '';
+        this.onFieldChange(PatchEvent.from(fieldValue && !fieldValue.length ? set(newValue) : setIfMissing(newValue)), field);
       });
   }
 

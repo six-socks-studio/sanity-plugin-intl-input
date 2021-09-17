@@ -99,28 +99,33 @@ class Input extends React.Component<IProps, IState> {
 
       for (let block of clonedBlocks) {
         block._key = randomKey(12);
-        if (block.children && block.children.length) {
-          block.children = replaceKeys(block.children);
+
+        for (let prop in block) {
+          if (block[prop] && Array.isArray(block[prop]) && block[prop].length) {
+            block[prop] = replaceKeys(block[prop]);
+          }
         }
       }
 
       return clonedBlocks;
     }
 
-    const cloneField = value => {
-      if (Array.isArray(value)) {
-        const n = replaceKeys(value);
+    const cloneField = v => {
+      if (Array.isArray(v)) {
+        const n = replaceKeys(v);
         return n;
       } else {
-        return value;
+        return v;
       }
     }
 
     defaultValues
       .forEach(([k, v]) => {
         const field = fields.find(f => f.name === k);
-        const value = cloneField(v);
-        this.onFieldChange(PatchEvent.from(setIfMissing(value)), field);
+        const newValue = cloneField(v);
+        const slug = createSlug(currentLanguage.name);
+        const fieldValue = value && value[slug] && value[slug][field.name];
+        this.onFieldChange(PatchEvent.from(!fieldValue.length ? set(newValue) : setIfMissing(newValue)), field);
       });
   }
 

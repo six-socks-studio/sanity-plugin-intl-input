@@ -98,6 +98,7 @@ class Input extends React.Component<IProps, IState> {
       const clonedBlocks = cloneDeep(blocks);
 
       for (let block of clonedBlocks) {
+        if (typeof block !== 'object') return
         block._key = randomKey(12);
 
         for (let prop in block) {
